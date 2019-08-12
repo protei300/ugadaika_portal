@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <h1>Добро пожаловать в игру Угадайка</h1>
+  <p> Количество посещений: {{ visit_numbers }} </p>
+  <div id="app">
+    <ul>
+      <li v-for="person in people">
+        <a href="">[[person]]</a> <button v-on:click="greet(person)"> hey </button>
+
+      </li>
+      <todo-item v-for="person in people" v-bind:todo="person" ></todo-item>
+    </ul>
+  </div>
+  <script>
+
+    Vue.component('todo-item', {
+        delimiters: ['[[', ']]'],
+        props: ['todo'],
+        template: '<li> [[todo]]</li>'
+      })
+
+    var app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+          message: 'Hello Vue!',
+          people: ['Vasya', 'Petya', 'Kola'],
+          seen: false
+      },
+      methods: {
+          greet: function(name) {
+              console.log('Hello from ' + name + '!')
+          }
+      }
+    })
+
+
+  </script>
+{% endblock %}
