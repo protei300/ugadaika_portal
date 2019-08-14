@@ -12,7 +12,14 @@
       </li>
       <todo-item v-for="person in people" v-bind:todo="person" ></todo-item>
     </ul>
+    <table>
+      <tr>
+        <img src="{{pict.url}}"></img>
+      </tr>
+
+    </table>
   </div>
+
   <script>
 
     Vue.component('todo-item', {
@@ -29,9 +36,10 @@
           people: ['Vasya', 'Petya', 'Kola'],
           seen: false
       },
+      name: 'adfadfsaf',
       methods: {
-          greet: function(name) {
-              console.log('Hello from ' + name + '!')
+          greet: function (name) {
+              console.log('Hello from ' + name + '!');
           }
       }
     })
