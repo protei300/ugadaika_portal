@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <table>
+        <tr>
+            <td>
+                <strong> Звуки </strong>
+            </td>
+            <td>
+                <select>
+                    {% for item in sounds_feature %}
+                        <option> {{ item.sound_name }} </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import CardShirts
+from .models import CardShirts, Cards, SoundsFeature, SoundPlace, SuffixFeature, ShapeFeature, ColorFeature, SlogFeature
 
 # Create your views here.
 
@@ -17,3 +17,25 @@ class IndexView(View, LoginRequiredMixin):
             'pict': first_shirt.shirt_picture
         }
         return render(request, self.template_name, context = context)
+
+class GenerateGameView(View):
+    template_name = 'ugadaika/request.html'
+
+
+    def get(self,request):
+        sounds_features = SoundsFeature.objects.all()
+        sound_place = SoundPlace.objects.all()
+        suffix_feature = SuffixFeature.objects.all()
+        shape_feature = ShapeFeature.objects.all()
+        color_feature = ColorFeature.objects.all()
+        slog_feature = SlogFeature.objects.all()
+
+        context ={
+            "sounds_feature": sounds_features,
+            "sound_place": sound_place,
+            "suffix_feature": suffix_feature,
+            "shape_feature": shape_feature,
+            "color_feature": color_feature,
+            "slog_feature": slog_feature
+        }
+        return render(request, self.template_name, context=context)
