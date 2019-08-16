@@ -25,7 +25,8 @@
     Vue.component('todo-item', {
         delimiters: ['[[', ']]'],
         props: ['todo'],
-        template: '<li> [[todo]]</li>'
+        template: '<li> [[todo]]</li>',
+
       })
 
     var app = new Vue({
@@ -40,10 +41,11 @@
       methods: {
           greet: function (name) {
               console.log('Hello from ' + name + '!');
+
           }
       }
-    })
 
+    })
 
   </script>
 {% endblock %}

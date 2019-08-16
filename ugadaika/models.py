@@ -14,9 +14,13 @@ class SoundsFeature(models.Model):
 
     class META:
         ordering = ['sound_name']
+        verbose_name_plural = "Звуки"
+
 
     def __str__(self):
         return f"{self.sound_name}"
+
+
 
 class SoundPlace(models.Model):
     index = models.AutoField(primary_key=True)
@@ -27,7 +31,7 @@ class SoundPlace(models.Model):
 
     class META:
         ordering = ['place_name']
-
+        verbose_name_plural = "Место звука"
 ### Слоговая структура
 class SlogFeature(models.Model):
     index = models.AutoField(primary_key=True)
@@ -35,6 +39,7 @@ class SlogFeature(models.Model):
 
     class META:
         ordering = ['slog_struct_name']
+        verbose_name_plural = "Слоги"
 
     def __str__(self):
         return self.slog_name
@@ -46,6 +51,7 @@ class SuffixFeature(models.Model):
 
     class META:
         ordering = ['suffix_name']
+        verbose_name_plural = "Суффиксы"
 
     def __str__(self):
         return self.suffix_name
@@ -57,6 +63,7 @@ class ShapeFeature(models.Model):
 
     class META:
         ordering = ['shape_name']
+        verbose_name_plural = "Форма"
 
     def __str__(self):
         return self.shape_name
@@ -68,6 +75,7 @@ class ColorFeature(models.Model):
 
     class META:
         ordering = ['color_name']
+        verbose_name_plural = "Цвет"
 
     def __str__(self):
         return self.color_name

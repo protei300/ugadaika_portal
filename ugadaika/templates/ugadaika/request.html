@@ -1,22 +1,58 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container">
-    <table>
-        <tr>
-            <td>
-                <strong> Звуки </strong>
-            </td>
-            <td>
-                <select>
-                    {% for item in sounds_feature %}
-                        <option> {{ item.sound_name }} </option>
-                    {% endfor %}
-                </select>
-            </td>
-        </tr>
-    </table>
-</div>
+    {% if features_list %}
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script type="text/javascript">
+
+        </script>
+
+        <div id="app" class="container">
+            <p>[[ message ]]</p>
+            <table>
+                {% for feature in features_list %}
+                    <tr>
+                        <td>{{ feature.0 }}</td>
+                        <td>
+                            <select>
+                                {% for value in feature.1 %}
+                                    <option>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    {% else %}
+        <p> Нет элементов для отображения </p>
+    {% endif %}
+
+<script>
 
 
+    Vue.component('list-item-custom', {
+        delimiters: ['[[',']]'],
+        props: ['value_of_list'],
+        template: '[[value_of_list]]',
+
+    });
+    var vm = new Vue({
+        delimiters: ['[[',']]'],
+        el: '#app',
+        data: {
+
+            message: 'Hello world',
+
+           },
+    });
+
+
+</script>
 {% endblock %}
+
+
+
+
+
