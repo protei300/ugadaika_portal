@@ -80,6 +80,39 @@ class ColorFeature(models.Model):
     def __str__(self):
         return self.color_name
 
+class MaterialFeature(models.Model):
+    index = models.AutoField(primary_key=True)
+    material_name = models.CharField(max_length=200, null=False, db_column='Материал')
+
+    class META:
+        ordering = ['material_name']
+        verbose_name_plural = "Материал"
+
+    def __str__(self):
+        return self.material_name
+
+class EndingFeature(models.Model):
+    index = models.AutoField(primary_key=True)
+    ending_name = models.CharField(max_length=200, null=False, db_column='Окончание')
+
+    class META:
+        ordering = ['ending_name']
+        verbose_name_plural = "Окончание"
+
+    def __str__(self):
+        return self.ending_name
+
+class SexFeature(models.Model):
+    index = models.AutoField(primary_key=True)
+    sex_name = models.CharField(max_length=200, null=False, db_column='Род')
+
+    class META:
+        ordering = ['sex_name']
+        verbose_name_plural = "Род"
+
+    def __str__(self):
+        return self.sex_name
+
 
 class Cards(models.Model):
     index = models.AutoField(primary_key=True)
@@ -90,6 +123,10 @@ class Cards(models.Model):
     suffix_feature = models.ForeignKey(SuffixFeature, on_delete=models.CASCADE)
     shape_feature = models.ForeignKey(ShapeFeature, on_delete=models.CASCADE)
     color_feature = models.ForeignKey(ColorFeature, on_delete=models.CASCADE)
+    material_feature = models.ForeignKey(MaterialFeature, on_delete=models.CASCADE, default=1)
+    ending_feature = models.ForeignKey(EndingFeature, on_delete=models.CASCADE, default=1)
+    sex_feature = models.ForeignKey(SexFeature, on_delete=models.CASCADE, default=1)
+
 
     class META:
         ordering = ['card_name']
@@ -98,7 +135,11 @@ class Cards(models.Model):
         return f"{self.index} {self.card_name}"
 
     def sound_display(self):
-        return ', '.join([a.sound_name for a in self.sound.all()])
+        '''res = []
+        for a in self.sound.all():
+            res.append(f"{a.sound_name} в {a.place_name}")
+'''
+        return ', '.join("dfdfdf")
 
 
 
