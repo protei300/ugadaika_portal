@@ -135,14 +135,16 @@ class Cards(models.Model):
         return f"{self.index} {self.card_name}"
 
     def sound_display(self):
-        '''res = []
+        res = []
+
         for a in self.sound.all():
-            res.append(f"{a.sound_name} в {a.place_name}")
-'''
-        return ', '.join("dfdfdf")
+            sound_place_name = SoundPlace.objects.filter(cardssoundsplace__cards__card_name=self.card_name,
+                                                         cardssoundsplace__sounds__sound_name=a.sound_name)[0]
+            res.append(f'Звук "{a.sound_name}" в "{sound_place_name}"')
 
 
 
+        return ', '.join(res)
 
 
 class CardsSoundsPlace(models.Model):

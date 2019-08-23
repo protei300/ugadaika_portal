@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CardShirts, Cards, SoundsFeature, SoundPlace, SuffixFeature, ShapeFeature, ColorFeature, SlogFeature
-import json
+import numpy as np
 from .forms import GetPictures
-
+from random import shuffle
 # Create your views here.
 
 class IndexView(View, LoginRequiredMixin):
@@ -42,3 +42,59 @@ class GenerateGameView(View):
                 print (form.cleaned_data[data])
             context['form'] = form
         return render(request, self.template_name, context=context)
+
+
+class CardsViewCreated(View):
+    template_name = 'ugadaika/cards.html'
+
+    def post(self, request):
+        form = GetPictures(request.POST)
+
+        if form.is_valid():
+            res=Cards.objects.all()
+            if form.cleaned_data['shape_feature'] is not None:
+                res = res.filter(shape_feature__shape_name=form.cleaned_data['shape_feature'])
+            if form.cleaned_data['color_feature'] is not None:
+                res = res.filter(color_feature__color_name=form.cleaned_data['color_feature'])
+            if form.cleaned_data['slog_feature'] is not None:
+                res = res.filter(slog_feature__slog_name=form.cleaned_data['slog_feature'])
+            if form.cleaned_data['suffix_feature'] is not None:
+                res = res.filter(suffix_feature__suffix_name=form.cleaned_data['suffix_feature'])
+            if form.cleaned_data['ending_feature'] is not None:
+                res = res.filter(ending_feature__ending_name=form.cleaned_data['ending_feature'])
+            if form.cleaned_data['sex_feature'] is not None:
+                res = res.filter(sex_feature__sex_name=form.cleaned_data['sex_feature'])
+            if form.cleaned_data['material_feature'] is not None:
+                res = res.filter(material_feature__material_name=form.cleaned_data['material_feature'])
+            if form.cleaned_data['sound_feature_start'].exists():
+                res = res.filter(sound__in = form.cleaned_data['sound_feature_start'],
+                                 cardssoundsplace__place__place_name__iexact='начало')
+            if form.cleaned_data['sound_feature_middle'].exists():
+                res = res.filter(sound__in = form.cleaned_data['sound_feature_middle'],
+                                 cardssoundsplace__place__place_name__iexact='середина')
+            if form.cleaned_data['sound_feature_end'].exists():
+                res = res.filter(sound__in = form.cleaned_data['sound_feature_end'],
+                                 cardssoundsplace__place__place_name__iexact='конец')
+
+            card_shirt = CardShirts.objects.first()
+
+        ####### Создаем и наполняем список картинок #########
+            res_list = list(res)
+            new_res_list = res_list.copy()
+            res_list.extend(new_res_list)
+            shuffle(res_list)
+            print (res_list)
+            while np.ceil(len(res_list)/4) != len(res_list)/4:
+                res_list.append(None)
+            print (res_list)
+
+            row = int(np.ceil(len(res_list)/4))
+            result = np.reshape(res_list,(row,4))
+
+
+            context = {
+                'pictures_list': result,
+                'card_shirt': card_shirt,
+            }
+
+            return render(request, self.template_name, context=context)

@@ -8,9 +8,9 @@
 
         </script>
 
-        <div id="app" class="container">
+        <div id="app" class="container-fluid">
             <p>[[ message ]]</p>
-            <form action="" method="post" novalidate>
+            <form action="{%  url 'cards_view' %}" method="post" novalidate>
                 {% csrf_token %}
                 {%  regroup form by field.group as field_groups %}
                 <div class="row" valign="middle">

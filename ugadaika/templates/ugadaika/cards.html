@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container-fluid">
+
+        {% for pic_row in pictures_list %}
+            <div class="row">
+                {% for pic in pic_row %}
+                    <div class="col-3">
+                        {%  if pic %}
+                            <img src="{{ pic.card.url }}" class="img-fluid">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}
