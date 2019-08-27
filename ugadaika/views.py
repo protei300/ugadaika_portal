@@ -5,6 +5,7 @@ from .models import CardShirts, Cards, SoundsFeature, SoundPlace, SuffixFeature,
 import numpy as np
 from .forms import GetPictures
 from random import shuffle
+import json
 # Create your views here.
 
 class IndexView(View, LoginRequiredMixin):
@@ -16,7 +17,7 @@ class IndexView(View, LoginRequiredMixin):
         request.session['visit_numbers'] = visit_numbers + 1
         context = {
             'visit_numbers': visit_numbers,
-            'pict': first_shirt.shirt_picture
+
         }
         return render(request, self.template_name, context = context)
 
@@ -76,7 +77,7 @@ class CardsViewCreated(View):
                 res = res.filter(sound__in = form.cleaned_data['sound_feature_end'],
                                  cardssoundsplace__place__place_name__iexact='конец')
 
-            card_shirt = CardShirts.objects.first()
+            card_shirt = CardShirts.objects.first().shirt_picture
 
         ####### Создаем и наполняем список картинок #########
             res_list = list(res)
@@ -84,17 +85,16 @@ class CardsViewCreated(View):
             res_list.extend(new_res_list)
             shuffle(res_list)
             print (res_list)
-            while np.ceil(len(res_list)/4) != len(res_list)/4:
-                res_list.append(None)
-            print (res_list)
-
-            row = int(np.ceil(len(res_list)/4))
-            result = np.reshape(res_list,(row,4))
+            ser_list = []
+            for elem in res_list:
+                ser_list.append(elem.card.url)
+            json_slzd = json.dumps(ser_list)
+            print (json_slzd)
 
 
             context = {
-                'pictures_list': result,
                 'card_shirt': card_shirt,
+                'json_slzd': json_slzd,
             }
 
             return render(request, self.template_name, context=context)
