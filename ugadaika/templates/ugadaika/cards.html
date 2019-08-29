@@ -5,34 +5,30 @@
     {% if json_slzd %}
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script type="text/javascript">
-        slzd_pics = {{ json_slzd|safe }}
-        card_shirt = '{{ card_shirt.url|safe }}'
-
+        slzd_pics = {{ json_slzd|safe }};
+        card_shirt = '{{ card_shirt.url|safe }}';
+        pic_img_class_array = [];
+        for (let i=0; i<slzd_pics.length; i+=1){
+            let picture = {
+                facePic: slzd_pics[i],
+                shirtPic: card_shirt,
+                showFace: false
+            };
+            pic_img_class_array.push(picture);
+        }
     </script>
-    <div hidden="true" class="container-fluid">
 
-        {% for pic_row in pictures_list %}
-            <div class="row">
-                {% for pic in pic_row %}
-                    <div class="col-3">
-                        {%  if pic %}
-                            <img src="{{ pic.card.url }}">
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-
-
-    </div>
-    <div class="container-fluid" id="app">
+    <div class="container-fluid" id="app" >
         <div class="row">
-            <div v-for="(face_pic, index) in pic_img" class="col-sm-3">
-                <custom_img :face_pic="face_pic" :shirt_pic="shirt_img" :id="index"></custom_img>
+            <div v-for="(picClass, index) in pic_img" :key="index" class="col-sm-3">
+                <transition name="cards" mode="out-in">
+                    <custom_img :pic_object="picClass"
+                                :id="index"
+                                :key="picClass.showFace"
+                                @myevent="turnCard"></custom_img>
+                </transition>
             </div>
         </div>
-
-
 
     </div>
 
@@ -42,27 +38,29 @@
     <script>
         Vue.component( 'custom_img', {
             delimiters: ['[[',']]'],
-            props: ['face_pic', 'shirt_pic', 'id'],
+            props: ['pic_object',  'id'],
             data()  {
                 return {
-                    showFace: false,
-                    showPic: this.shirt_pic,
+                }
+            },
+            template: '<img class="img-fluid img-rounded" @click="turnCard" ' +
+                ':src="picToShow">',
+
+            computed:{
+                picToShow: function (){
+
+                    if (this.pic_object.showFace)
+                        return this.pic_object.facePic;
+                    else
+                        return this.pic_object.shirtPic;
 
                 }
             },
-            template: '<img class="img-fluid img-rounded" @click="turnCard" :src="showPic">'
-            ,
             methods:{
                 turnCard: function (){
-                    console.log(this.id)
-                    this.showFace = !this.showFace;
-                    if (this.showFace){
-                        this.showPic = this.face_pic;
-                    }
-                    else{
-                        this.showPic = this.shirt_pic;
-                    }
-                }
+                    this.$emit("myevent", this.id);
+                },
+
             }
         });
 
@@ -71,30 +69,38 @@
         delimiters: ['[[', ']]'],
         data:
             {
-                product: 'Socks',
-                description: "Наверно это разные носки",
-                displayImage: slzd_pics,
-                pic_img: slzd_pics,
-                showCard: true,
-                shirt_img: card_shirt
+                turnStarted: false,
+                turned : 0,
+                pic_img: pic_img_class_array,
+                docState: "saved",
+
             },
         methods: {
-            animateCard: function () {
-                if (this.showCard)
-                {
-                    this.showCard=!this.showCard;
-                    this.displayImage=this.shirt_img;
+            turnCard(id) {
+                if (this.turned<2) {
+                    this.pic_img[id].showFace = !this.pic_img[id].showFace;
+                    if (this.pic_img[id].showFace)
+                        this.turned++;
+                    else
+                        this.turned--;
                 }
-                else
-                {
-                    this.showCard=!this.showCard;
-                    this.displayImage=this.pic_img;
+                if (!this.turnStarted && this.turned >= 2){
+                    this.turnStarted = true;
+                    setTimeout(this.turnFace,2000);
+
                 }
 
 
-            }
+            },
+            turnFace() {
+                for (let i=0; i<this.pic_img.length;i++)
+                    this.pic_img[i].showFace = false;
+                this.turned=0;
+                this.turnStarted = false;
 
-        }
+            },
+
+        },
 
     })
 
