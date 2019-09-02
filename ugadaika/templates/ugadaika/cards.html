@@ -19,16 +19,17 @@
         }
     </script>
 
-    <div class="container-fluid" id="app" >
-        <div class="row justify-content-center">
-            <div v-for="(picClass, index) in pic_img" :key="index" class="col-3">
+    <div  class="container-fluid" id="app" >
+        <div v-if="!hiddenCards" class="row justify-content-center">
+            <div v-for="(picClass, index) in pic_img" :key="index" class="col-3 " >
                 <transition name="cards" mode="out-in">
 
                     <custom_img v-if="picClass.visible"
                                 :pic_object="picClass"
                                 :id="index"
                                 :key="picClass.showFace"
-                                @myevent="turnCard"></custom_img>
+                                @myevent="turnCard"
+                                ></custom_img>
                     <custom_img v-else
                                 :pic_object="picClass"
                                 :id="index"
@@ -38,11 +39,18 @@
                 </transition>
             </div>
         </div>
+        <div v-else class="container-fluid">
+            <div class="col-3">
+                <form action="{% url 'request_view' %}">
+                    <button class="btn btn-primary" formmethod="get"> Начать с начала </button>
+                </form>
+            </div>
+        </div>
         <div class="row">
             <p>Счет: [[score]]</p>
         </div>
-
     </div>
+
 
 
     {% endif %}
@@ -50,7 +58,7 @@
     <script>
         Vue.component( 'custom_img', {
             delimiters: ['[[',']]'],
-            props: ['pic_object',  'id'],
+            props: ['pic_object', 'id'],
             data()  {
                 return {
                 }
@@ -83,6 +91,19 @@
             }
         });
 
+        //Свойства:
+        // turnStart - обозначаем, что началась процедура по перевороту карточек и блокируем все действия
+        // turned - количество карт перевернутых в настоящее время
+        // pic_img - класс с картинками для лицевой и тыльной части
+        // turned_ids - список карт, перевернутых в настоящее время
+        // score - Счет в игре
+
+        //Методы:
+        //turnCard - первернуть карту
+        //turnFace - переворачиваем все кары рубашкой
+        //hidePictures - если найдены совпадающие, то прячем эту карту
+
+
         var vm = new Vue({
         el: '#app',
         delimiters: ['[[', ']]'],
@@ -91,32 +112,58 @@
                 turnStarted: false,
                 turned : 0,
                 pic_img: pic_img_class_array,
-                docState: "saved",
                 turned_ids: [],
                 score: 0,
+                sameCards: 2,
+
 
             },
+        computed:{
+            hiddenCards: function () {
+                var allHidden = true;
+                this.pic_img.forEach(function(elem){
+                    if (elem.visible)
+                        allHidden=false;
+                }.bind(allHidden));
+                return allHidden
+            },
+            optimalDisplacement: function() {
+                var length = this.pic_img.length;
+                var result = [];
+                for (let i=2; i<length; i++){
+                    if (length % i === 0)
+                        result.push(i);
+                }
+                result = result.filter(function(elem){
+                    if (elem<=5)
+                        return elem
+                });
+                return [result[result.length-1], length/result[result.length-1]];
+
+            }
+
+
+        },
         methods: {
             turnCard(id) {
-                if (this.turned<2) {
-                    this.pic_img[id].showFace = !this.pic_img[id].showFace;
-                    if (this.pic_img[id].showFace){
-                        this.turned++;
-                        this.turned_ids.push(id);
-                        console.log(this.turned_ids);
-                    }
-                    else {
-                        this.turned--;
-                        this.turned_ids = this.turned_ids.filter(function (value, index, arr) {
-                            return value !== id;
+                if (!this.turnStarted){
+                    if (this.turned<2) {
+                        this.pic_img[id].showFace = !this.pic_img[id].showFace;
+                        if (this.pic_img[id].showFace){
+                            this.turned++;
+                            this.turned_ids.push(id);
+                            console.log(this.turned_ids);
+                        }
+                        else {
+                            this.turned--;
+                            this.turned_ids = this.turned_ids.filter(function (value, index, arr) {
+                                return value !== id;
 
-                        });
-                        console.log(this.turned_ids);
+                            });
+                            console.log(this.turned_ids);
+                        }
                     }
-                }
-                if (this.turned>=2)
-                    if (!this.turnStarted){
-
+                    if (this.turned>=2){
                         var equals = 0;
                         for (let i=0; i<this.turned_ids.length; i++){
                             if (this.pic_img[this.turned_ids[i]].facePic !== this.pic_img[id].facePic)
@@ -126,20 +173,16 @@
                         if (equals!==0) {
                             this.turnStarted = true;
                             this.turned_ids.length=0;
-                            setTimeout(this.turnFace, 2000);
+                            setTimeout(this.turnShirt, 2000);
                         }
                         else{
-                            console.log('entering here');
+                            this.turnStarted = true;
                             setTimeout(this.hidePictures,2000);
-
                         }
-
-
                     }
-
-
+                }
             },
-            turnFace() {
+            turnShirt() {
                 for (let i=0; i<this.pic_img.length;i++)
                     this.pic_img[i].showFace = false;
                 this.turned=0;
@@ -149,12 +192,14 @@
             hidePictures(){
                 for (let i=0; i<this.turned_ids.length; i++){
                                 this.pic_img[this.turned_ids[i]].visible=false;
-
                 }
                 this.score ++;
                 this.turned_ids.length=0;
                 this.turned = 0;
-            }
+                this.turnStarted=false;
+            },
+
+
 
         },
 

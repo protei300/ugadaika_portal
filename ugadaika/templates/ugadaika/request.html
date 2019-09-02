@@ -19,13 +19,12 @@
                             {{ field|as_crispy_field }}
                         </div>
                     {% endfor %}
-
+                    {% for field in field_groups.1.list %}
+                    <div class="col-sm-4">
+                        {{ field|as_crispy_field }}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% for field in field_groups.1.list %}
-                <div class="row">
-                    {{ field|as_crispy_field }}
-                </div>
-                {% endfor %}
             <input type="submit" class="btn btn-primary" value="Submit">
             </form>
         </div>
